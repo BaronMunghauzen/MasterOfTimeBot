@@ -407,16 +407,16 @@ async def process_add_category(message: types.Message, state: FSMContext):
         # Получаем данные о событии из состояния
         data = await state.get_data()
 
+        # Форматируем дату и время
+        remind_datetime = format_datetime(data['remind_datetime'])
+
         # Сохраняем событие с новой категорией
         async with aiosqlite.connect('events.db') as db:
             await db.execute('''
             INSERT INTO events (user_id, event_name, remind_datetime, repeat_interval, category)
             VALUES (?, ?, ?, ?, ?)
-            ''', (message.from_user.id, data['event_name'], data['remind_datetime'], data['repeat_interval'], category_name))
+            ''', (message.from_user.id, data['event_name'], remind_datetime, data['repeat_interval'], category_name))
             await db.commit()
-
-        # Форматируем дату и время
-        remind_datetime = format_datetime(data['remind_datetime'])
 
         # Формируем сообщение с информацией о событии
         repeat_interval_text = {
@@ -453,14 +453,15 @@ async def handle_my_events(message: types.Message):
 
 async def show_events(message: types.Message, user_id: int, page: int = 0):
     try:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M")  # Текущее время в формате "YYYY-MM-DD HH:MM"
         async with aiosqlite.connect('events.db') as db:
             # Получаем события для текущей страницы
             cursor = await db.execute('''
             SELECT id, event_name, remind_datetime, repeat_interval, category
-            FROM events WHERE user_id = ?
+            FROM events WHERE user_id = ? and remind_datetime >= ?
             ORDER BY remind_datetime ASC
             LIMIT ? OFFSET ?
-            ''', (user_id, EVENTS_PER_PAGE, page * EVENTS_PER_PAGE))
+            ''', (user_id, now, EVENTS_PER_PAGE, page * EVENTS_PER_PAGE))
             events = await cursor.fetchall()
 
             # Получаем общее количество событий
