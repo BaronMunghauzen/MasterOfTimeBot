@@ -534,6 +534,7 @@ async def show_events_by_category(message: types.Message):
         await message.answer("Выберите категорию:", reply_markup=builder.as_markup())
     except Exception as e:
         await message.answer("Произошла ошибка при получении категорий. Попробуйте позже.")
+        print(e)
 
 # Обработка callback-запросов для выбора категории
 @dp.callback_query(F.data.startswith("category_"))
