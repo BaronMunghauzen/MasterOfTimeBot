@@ -435,7 +435,7 @@ async def process_add_category(message: types.Message, state: FSMContext):
             f"📁 Категория: {category_name}"
         )
 
-        await message.answer(response, reply_markup=keyboard)
+        await message.answer(response, reply_markup=get_user_keyboard(message.from_user.id))
     except Exception as e:
         await message.answer("Произошла ошибка при добавлении категории или сохранении события. Попробуйте позже.")
         print(f"Ошибка в process_add_category: {e}")
