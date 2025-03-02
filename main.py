@@ -522,13 +522,15 @@ async def show_events_by_category(message: types.Message):
         if not categories:
             await message.answer("У вас пока нет категорий.")
             return
-
+        print(1)
         # Создаем клавиатуру с категориями
         builder = InlineKeyboardBuilder()
+        print(2)
         for category in categories:
             builder.button(text=category, callback_data=f"category_{category}")
+        print(3)
         builder.adjust(2)
-
+        print(4)
         await message.answer("Выберите категорию:", reply_markup=builder.as_markup())
     except Exception as e:
         await message.answer("Произошла ошибка при получении категорий. Попробуйте позже.")
