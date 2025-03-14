@@ -761,12 +761,12 @@ async def show_event_stats(message: types.Message):
 
         response = f"📊 Статистика по событиям:\n"
         response += f"Всего событий: {total_events}\n\n"
-        for event in events:
-            response += f"🆔 {event[0]}\n"
-            response += f"📅 Событие: {event[1]}\n"
-            response += f"📅 Напомнить: {event[2]}\n"
-            response += f"📁 Категория: {event[3] if event[3] else 'Без категории'}\n"
-            response += f"👤 Пользователь: @{event[4]}\n\n"
+        # for event in events:
+        #     response += f"🆔 {event[0]}\n"
+        #     response += f"📅 Событие: {event[1]}\n"
+        #     response += f"📅 Напомнить: {event[2]}\n"
+        #     response += f"📁 Категория: {event[3] if event[3] else 'Без категории'}\n"
+        #     response += f"👤 Пользователь: @{event[4]}\n\n"
 
         await message.answer(response)
     except Exception as e:
