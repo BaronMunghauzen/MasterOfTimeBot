@@ -558,7 +558,6 @@ async def process_category_events(callback_query: CallbackQuery):
         if not events:
             await callback_query.message.answer(f"В категории '{category}' пока нет событий.")
             return
-        print(events)
         response = f"События в категории '{events[0][4]}':\n"
         for event in events:
             repeat_interval = {
