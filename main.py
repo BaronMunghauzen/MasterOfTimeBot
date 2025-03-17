@@ -528,18 +528,14 @@ async def show_events_by_category(message: types.Message):
         if not categories:
             await message.answer("У вас пока нет категорий.")
             return
-        print(1)
+
         # Создаем клавиатуру с категориями
         builder = InlineKeyboardBuilder()
-        print(2)
         for category in categories:
-            cleaned_category = category.replace(" ", "_").lower()
-            if len(cleaned_category) > 20:
-                cleaned_category = cleaned_category[0:19] + "..."
-            builder.button(text=category, callback_data=f"category_{cleaned_category}")
-        print(3)
+            if len(category) > 30:
+                category = category[0:29]
+            builder.button(text=category, callback_data=f"category_{category}")
         builder.adjust(2)
-        print(4)
         await message.answer("Выберите категорию:", reply_markup=builder.as_markup())
     except Exception as e:
         await message.answer("Произошла ошибка при получении категорий. Попробуйте позже.")
@@ -548,21 +544,22 @@ async def show_events_by_category(message: types.Message):
 # Обработка callback-запросов для выбора категории
 @dp.callback_query(F.data.startswith("category_"))
 async def process_category_events(callback_query: CallbackQuery):
-    category = callback_query.data.split("_")[1]
+    category = callback_query.data.split("_")[1:]
+    category_like = f"{category[0]}%"
     try:
         async with aiosqlite.connect('events.db') as db:
             cursor = await db.execute('''
-            SELECT id, event_name, remind_datetime, repeat_interval
-            FROM events WHERE user_id = ? AND category = ?
+            SELECT id, event_name, remind_datetime, repeat_interval, category
+            FROM events WHERE user_id = ? AND category LIKE ?
             ORDER BY remind_datetime ASC
-            ''', (callback_query.from_user.id, category))
+            ''', (callback_query.from_user.id, category_like))
             events = await cursor.fetchall()
 
         if not events:
             await callback_query.message.answer(f"В категории '{category}' пока нет событий.")
             return
-
-        response = f"События в категории '{category}':\n"
+        print(events)
+        response = f"События в категории '{events[0][4]}':\n"
         for event in events:
             repeat_interval = {
                 "none": "Без повторения",
