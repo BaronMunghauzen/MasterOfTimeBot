@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
 from dotenv import load_dotenv
 import asyncio
 import calendar
@@ -18,9 +19,16 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))  # Ваш user_id
 
+TELEGRAM_PROXY_URL = os.getenv(
+    "TELEGRAM_PROXY_URL",
+    "http://DcNVAT:32DeAo@170.83.233.92:8000"
+)
+
 # Инициализация бота с использованием DefaultBotProperties
+session = AiohttpSession(proxy=TELEGRAM_PROXY_URL)
 bot = Bot(
     token=BOT_TOKEN,
+    session=session,
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)  # Устанавливаем parse_mode по умолчанию
 )
 dp = Dispatcher()
